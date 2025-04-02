@@ -1,0 +1,18 @@
+body {
+    background-color: #042326; /* Color claro de fondo */
+    color: aliceblue;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}

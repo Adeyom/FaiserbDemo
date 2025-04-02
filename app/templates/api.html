@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <main>
+    <div class="py-5 text-center">
+      <img class="d-block mx-auto mb-4" src="/static/img/api.png"  width="150" height="150">
+    </div>
+
+    <div class="row g-5" style="background-color:#0A3A40">
+      <div class="col-md-7 col-lg-12">
+        <h4 class="mb-3">CREDENTIALS</h4>
+        <form id="main-form" action="{{ url_for('main.api') }}" class="needs-validation"  novalidate method="post">
+          <div class="row g-3">
+            <div class="col-sm-12 d-flex flex-column align-items-center">
+              <div class="btn-group" role="group" aria-label="Ambiente">
+                  <input type="radio" class="btn-check" name="environment" id="testing" value="cert" required checked>
+                  <label class="btn btn-outline-primary" for="testing">Test</label>
+                  <input type="radio" class="btn-check" name="environment" id="production" value="prod" required>
+                  <label class="btn btn-outline-primary" for="production">Prod</label>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <label for="apiKey" class="form-label">API Key </label>
+              <input type="text" class="form-control" id="apiKey" name="apiKey" placeholder="API Key" value="" required>
+              <div class="invalid-feedback">
+                  Valid API Key is required.
+              </div>
+            </div>
+          
+            <div class="col-sm-6">
+                <label for="apiSecret" class="form-label">API Secret</label>
+                <input type="text" class="form-control" id="apiSecret" name="apiSecret" placeholder="API Secret" value="" required>
+                <div class="invalid-feedback">
+                    Valid API Secret is required.
+                </div>
+            </div>
+          
+          <hr class="my-4">
+          
+          <h4 class="mb-3">ENDPOINTS</h4>
+            <div class="row">
+              <!-- Fila 1 -->
+              <div class="col-md-3">
+                <input type="radio" class="btn-check" name="option" id="option1" value="1">
+                <label class="btn btn-outline-primary w-100" for="option1">Sale</label>
+              </div>
+              <div class="col-md-3">
+                <input type="radio" class="btn-check" name="option" id="option2" value="2">
+                <label class="btn btn-outline-primary w-100" for="option2">Token</label>
+              </div>
+              <div class="col-md-3">
+                <input type="radio" class="btn-check" name="option" id="option3" value="3">
+                <label class="btn btn-outline-primary w-100" for="option3">Void/Return</label>
+              </div>
+              <div class="col-md-3">
+                <input type="radio" class="btn-check" name="option" id="option4" value="4">
+                <label class="btn btn-outline-primary w-100" for="option4">PaymentURL</label>
+              </div>
+            </div>
+          <div class="row mt-3">
+            <!-- Fila 2 -->
+            <div class="col-md-4">
+              <input type="radio" class="btn-check" name="option" id="option5" value="5">
+              <label class="btn btn-outline-primary w-100" for="option5">Account Info</label>
+            </div>
+            <div class="col-md-4">
+              <input type="radio" class="btn-check" name="option" id="option6" value="6">
+              <label class="btn btn-outline-primary w-100" for="option6">Scheduler</label>
+            </div>
+            <div class="col-md-4">
+              <input type="radio" class="btn-check" name="option" id="option7" value="7">
+              <label class="btn btn-outline-primary w-100" for="option7">Customizable</label>
+            </div>
+          </div>
+
+          <hr class="my-4">
+          <div id="dynamic-content">
+          </div>
+          <!-- <input type="hidden" id="dynamic_data" name="dynamic_data"> -->
+
+          {{iframe_content}}
+
+          <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
+        </form>
+        {% if content %}
+          <div class="my-4">
+              <h3>Contenido POST:</h3>
+              <p>{{content}}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="responseModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="responseModalLabel">¡Transacción Exitosa!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body text-center">
+        
+        <div class="card shadow mt-4 mx-auto text-center" style="width: 100%;">
+          <div class="card-header bg-success text-white">
+            Detalles de la Transacción
+          </div>
+          <div class="card-body">
+            <h5 class="card-title text-black">Número de Transacción</h5>
+            <p id="transaction-id" class="card-text text-black"><strong></strong></p>
+
+            <h5 class="card-title text-black">Estado</h5>
+            <p id="transaction-status" class="card-text text-success"><strong></strong></p>
+
+            <h5 class="card-title text-black">Monto</h5>
+            <p id="transaction-amount" class="card-text text-black"><strong></strong></p>
+
+            <h5 class="card-title text-black">Fecha y Hora</h5>
+            <p id="transaction-datetime" class="card-text text-black"><strong></strong></p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='js/api.js') }}"></script> -->
+    
+<!-- <script src="../static/js/main.js"></script> -->
+{% endblock %}

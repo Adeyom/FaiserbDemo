@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+
+
+    <!-- Productos -->
+    <div class="container mt-5">
+        <h2 class="text-center mb-4" style="color: rgb(255, 255, 255);">Nuestros Productos</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card" style="background-color: #0A3A40;">
+                    <img src="static\img\tenis.jpg" class="card-img-top" alt="Producto" style="width: 350px; height: 200px; align-self: center;">
+                    <div class="card-body">
+                        <h5 class="card-title">Tenis</h5>
+                        <p class="card-text">Blancos.</p>
+                        <p class="text-primary">$500.00</p>
+                        <button class="btn btn-primary" onclick="agregarAlCarrito('Tenis', 1.00)">Agregar al carrito</button> 
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="background-color: #0A3A40;">
+                    <img src="static\img\zapatos2.jpg" class="card-img-top" alt="Producto" style="width: 350px; height: 200px; align-self: center;">
+                    <div class="card-body">
+                        <h5 class="card-title">Zapatos</h5>
+                        <p class="card-text">Gris Oxford.</p>
+                        <p class="text-primary">$1000.00</p>
+                        <button class="btn btn-primary" onclick="agregarAlCarrito('Zapatos', 1000.00)">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="background-color: #0A3A40;">
+                    <img src="static\img\botasmujer.jpg" class="card-img-top" alt="Producto" style="width: 350px; height: 200px; align-self: center;">
+                    <div class="card-body">
+                        <h5 class="card-title">Botas Mujer</h5>
+                        <p class="card-text">Cafés.</p>
+                        <p class="text-primary">$30.00</p>
+                        <button class="btn btn-primary" onclick="agregarAlCarrito('Botas', 30.00)">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Carrito -->
+    <div class="container mt-5" id="carrito">
+        <h2 class="text-center mb-4" style= "color: aliceblue;">Carrito de Compras</h2>
+        <ul id="lista-carrito" class="list-group mb-3"></ul>
+        <h4 style= "color: aliceblue;">Total: $<span id="total" style= "color: aliceblue;">0.00</span></h4>
+    </div>
+    
+    <form method="post" action="https://test.ipg-online.com/connect/gateway/processing" id="formPago" onsubmit="return procederAlPago(event)">
+        <input type="hidden" name="chargetotal" id="chargetotal"> 
+        <input type="hidden" name="checkoutoption" value="combinedpage">
+        <input type="hidden" name="currency" value="484">
+        <input type="hidden" name="hash_algorithm" value="HMACSHA256">
+        <input type="hidden" name="responseFailURL" value="http://127.0.0.1:5000/respuesta_pago">
+        <input type="hidden" name="responseSuccessURL" value="http://127.0.0.1:5000/respuesta_pago">
+        <input type="hidden" name="storename" value="62130996">
+        <input type="hidden" name="timezone" value="America/Mexico_City">
+        <input type="hidden" name="txndatetime" id="txndatetime">
+        <input type="hidden" name="txntype" value="sale">
+        <input type="hidden" name="hashExtended" id="hashExtended">
+        <button class="btn btn-success" type="submit">Pagar</button>
+    </form>
+
+<script>
+
+    let carrito = [];
+
+    function agregarAlCarrito(nombre, precio) {
+        carrito.push({ nombre, precio });
+        actualizarCarrito();
+    }
+
+    function eliminarDelCarrito(index) {
+        carrito.splice(index, 1);
+        actualizarCarrito();
+    }
+
+    function actualizarCarrito() {
+        const listaCarrito = document.getElementById("lista-carrito");
+        const totalElemento = document.getElementById("total");
+
+        if (!listaCarrito || !totalElemento) {
+            console.error("Uno o más elementos del DOM no fueron encontrados.");
+            return;
+        }
+        
+        listaCarrito.innerHTML = "";
+        let total = 0;
+        carrito.forEach((producto, index) => {
+            total += producto.precio;
+            const li = document.createElement("li");
+            li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+            li.innerHTML = `${producto.nombre} - $${producto.precio.toFixed(2)} <button class="btn btn-danger btn-sm" onclick="eliminarDelCarrito(${index})">X</button>`;
+            listaCarrito.appendChild(li);
+        });
+
+        totalElemento.textContent = total.toFixed(2);
+    }
+
+    async function procederAlPago(event) {
+        event.preventDefault();
+
+        if (carrito.length === 0) {
+            alert("El carrito está vacío");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://127.0.0.1:5000/connect1", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ productos: carrito }),
+            });
+
+            const data = await response.json();
+
+            if (!data.total || !data.hash_base64) {
+                alert("Error al procesar el pago.");
+                return;
+            }
+
+             // Llenar el formulario con los datos del backend
+            document.getElementById("chargetotal").value = data.total;
+            document.getElementById("txndatetime").value = data.txndatetime;
+            document.getElementById("hashExtended").value = data.hash_base64;
+
+            console.log("Datos recibidos del backend:", data);
+
+            // Enviar el formulario automáticamente
+            document.getElementById("formPago").submit();
+
+        } catch (error) {
+        console.error("Error en la petición al backend:", error);
+        alert("Hubo un error al conectar con el servidor.");
+        }    
+}
+
+</script>
+
+
+
+
+
+{% endblock %}

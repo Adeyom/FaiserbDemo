@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Respuesta del Pago{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 d-flex justify-content-center align-items-center vh-100">
+    <!-- Card de Respuesta -->
+    <div class="card shadow-lg p-4 text-center" style="max-width: 500px; width: 100%;">
+        <div class="card-header {{ 'bg-success text-white' if es_aprobada else 'bg-danger text-white' }}">
+            <h3>{{ 'Pago Aprobado' if es_aprobada else 'Pago Rechazado' }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="modal-body d-flex flex-column align-items-center justify-content-center text-center" style="color: black;">
+                <p><strong>Fecha de transacción</strong><br>{{ datos.get("txndatetime", "N/A") }}</p>
+                <p><strong>Oid</strong><br> {{ datos.get("oid", "N/A") }}</p>
+                <p><strong>Approval Code</strong><br> {{ datos.get("approval_code", "N/A") }}</p>
+                <p><strong>Tarjeta</strong><br> {{ card }}</p>
+                <p><strong>Monto</strong><br> ${{ datos.get("chargetotal", "0.00") }}</p>
+                <p><strong>Estatus</strong><br> {{ datos.get("status", "N/A") }}</p>
+                
+            </div>
+        </div>
+        <div class="card-footer text-center">
+            <a href="/connect1" class="btn btn-primary">Regresar</a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

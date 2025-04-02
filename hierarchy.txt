@@ -1,0 +1,13 @@
+API-REST/
+├── venv/                # Entorno virtual (no lo modifiques manualmente)
+├── app/                 # Carpeta principal de tu aplicación Flask
+│   ├── static/          # Archivos estáticos (CSS, JS, imágenes)
+│   ├── templates/       # Archivos HTML
+│   ├── __init__.py      # Inicialización de la aplicación Flask
+│   ├── routes.py        # Definición de rutas de tu aplicación
+│   ├── models.py        # Lógica de base de datos (opcional)
+│   └── services.py      # Servicios como integración con APIs
+├── config.py            # Configuración del proyecto (e.g., API keys)
+├── app.py               # Archivo principal para ejecutar la aplicación
+├── requirements.txt     # Dependencias del proyecto
+└── .gitignore           # Archivos/carpetas a ignorar por Git (e.g., `venv/`)
