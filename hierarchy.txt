@@ -11,3 +11,9 @@ API-REST/
 ├── app.py               # Archivo principal para ejecutar la aplicación
 ├── requirements.txt     # Dependencias del proyecto
 └── .gitignore           # Archivos/carpetas a ignorar por Git (e.g., `venv/`)
+
+
+
+git add .
+git commit -m "Descripción del cambio"
+git push origin main

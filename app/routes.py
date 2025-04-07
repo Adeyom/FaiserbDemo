@@ -149,8 +149,8 @@ def webhook3ds():
     else:
         print("POST")
         # Obtén los datos del formulario enviados mediante POST
-        data = request.form.to_dict()  # Convierte los datos del formulario en un diccionario
-        print("Received termURL data:", data)
+        threeDSMethodData = request.form['threeDSMethodData']  # Convierte los datos del formulario en un diccionario
+        print("ThreeDSMethodData:", threeDSMethodData)
         
         # Procesa la respuesta del flujo 3D Secure
         return jsonify({"status": "success"}), 200
@@ -240,7 +240,7 @@ def api():
                 "requestType": "PaymentCardSaleTransaction",
                 "paymentMethod": {
                     "paymentCard": {
-                        "number": 4761120010000492, #dynamic_values.get('tarjeta',''),
+                        "number": 4265880000000007, #dynamic_values.get('tarjeta',''),
                         "securityCode": 123, #dynamic_values.get('cvv',''),
                         "expiryDate": {
                             "month": 12, #month,
@@ -250,8 +250,8 @@ def api():
                 },
                 "authenticationRequest": {
                     "authenticationType": "Secure3DAuthenticationRequest",
-                    "termURL": "https://78b9-2806-2f0-a141-ea8a-e0f5-409b-5c9f-8fee.ngrok-free.app/webhook3ds",
-                    "methodNotificationURL": "https://78b9-2806-2f0-a141-ea8a-e0f5-409b-5c9f-8fee.ngrok-free.app/webhook3ds",
+                    "termURL": "https://42b6-148-244-170-158.ngrok-free.app/webhook3ds",
+                    "methodNotificationURL": "https://42b6-148-244-170-158.ngrok-free.app/webhook3ds",
                     "challengeIndicator": "01"
     }
         }
@@ -296,25 +296,6 @@ def api():
                     ipgTransaction = response_json.get('ipgTransactionId', {})
                     print("IPGTransaction: \n" + ipgTransaction, "\n\n")
                     print("IFRAME: \n" + iframe_content, "\n\n")
-                    
-                    #Ejecutar Iframe
-                    if iframe_content:
-                        html_template = f"""
-                    <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Procesando Pago</title>
-                    </head>
-                    <body>
-                        {iframe_content}
-                    </body>
-                    </html>
-                    """
-                    return render_template('api.html',iframe_content=iframe_content)
-                    #Si se recibe respuesta en webhook hacer PATCH
-                    
 
                     return jsonify({ # Retornar JSON al frontend
                         "transactionId": response_json.get("orderId", "N/A"),
@@ -322,6 +303,7 @@ def api():
                         "amount": response_json.get("approvedAmount", {}).get("total", "N/A"),
                         "dateTime": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                     }), 200
+
                 except json.JSONDecodeError:
                     return jsonify({"error": "Respuesta no contiene un JSON válido"}), 500
             else:
