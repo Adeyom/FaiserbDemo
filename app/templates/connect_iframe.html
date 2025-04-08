@@ -57,14 +57,14 @@
         <input type="hidden" name="checkoutoption" value="combinedpage">
         <input type="hidden" name="currency" value="484">
         <input type="hidden" name="hash_algorithm" value="HMACSHA256">
-        <input type="hidden" name="responseFailURL" value="https://c390-148-244-170-158.ngrok-free.app/respuesta_pago">
-        <input type="hidden" name="responseSuccessURL" value="https://c390-148-244-170-158.ngrok-free.app/respuesta_pago">
+        <input type="hidden" name="responseFailURL" value="https://618f-148-244-170-158.ngrok-free.app/respuesta_pago">
+        <input type="hidden" name="responseSuccessURL" value="https://618f-148-244-170-158.ngrok-free.app/respuesta_pago">
         <input type="hidden" name="storename" value="62130996">
         <input type="hidden" name="timezone" value="America/Mexico_City">
         <input type="hidden" name="txndatetime" id="txndatetime">
         <input type="hidden" name="txntype" value="sale">
         <input type="hidden" name="hashExtended" id="hashExtended">
-        <input type="hidden" name="parentUri" id="parentUri" value="https://c390-148-244-170-158.ngrok-free.app/connect_iframe">
+        <input type="hidden" name="parentUri" id="parentUri" value="https://618f-148-244-170-158.ngrok-free.app/connect_iframe">
         <button class="btn btn-success" type="submit">Pagar</button>
     </form>
 
@@ -116,7 +116,7 @@
         }
 
         try {
-            const response = await fetch("https://c390-148-244-170-158.ngrok-free.app/connect_iframe", {
+            const response = await fetch("https://618f-148-244-170-158.ngrok-free.app/connect_iframe", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ productos: carrito }),

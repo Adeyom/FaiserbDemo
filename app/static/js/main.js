@@ -68,6 +68,21 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("transaction-datetime").textContent =
         data.dateTime || "N/A";
 
+        //Ejecutar Iframe si se encuentra en la peticion
+        if (data.iframe) {
+            const container = document.createElement("div");
+            container.style.display = "none"; // Opcional: ocultar visualmente
+            container.innerHTML = data.iframe;
+            document.body.appendChild(container);
+    
+            // Buscar y ejecutar el <script> del form (submit)
+            const script = container.querySelector("script");
+            if (script) {
+                eval(script.textContent); // Ejecutar el submit automático
+            }
+        }
+        
+
         // Mostrar el modal
         const modal = new bootstrap.Modal(
         document.getElementById("responseModal")

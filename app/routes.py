@@ -54,14 +54,14 @@ def connectIframe():
                 "chargetotal": total,
                 "txndatetime": txndatetime, 
                 "currency": "484", 
-                "responseFailURL": "https://c390-148-244-170-158.ngrok-free.app/respuesta_pago",
+                "responseFailURL": "https://618f-148-244-170-158.ngrok-free.app/respuesta_pago",
                 "hash_algorithm": "HMACSHA256",
                 "storename": "62130996",
                 "timezone": "America/Mexico_City", 
-                "responseSuccessURL": "https://c390-148-244-170-158.ngrok-free.app/respuesta_pago",
+                "responseSuccessURL": "https://618f-148-244-170-158.ngrok-free.app/respuesta_pago",
                 "txntype": "sale",
                 "checkoutoption": "combinedpage",
-                "parentUri": "https://c390-148-244-170-158.ngrok-free.app/connect_iframe"
+                "parentUri": "https://618f-148-244-170-158.ngrok-free.app/connect_iframe"
             }
 
             key = "Alex2024$"
@@ -142,18 +142,34 @@ def connect():
             return jsonify({"error": "Error interno del servidor"}), 500
 
 
-@main.route('/webhook3ds', methods=['GET','POST'])
+@main.route('/webhook3ds', methods=['POST'])
 def webhook3ds():
-    if request.method == 'GET':
-        return render_template('webhook3ds.html')
-    else:
-        print("POST")
-        # Obtén los datos del formulario enviados mediante POST
-        threeDSMethodData = request.form['threeDSMethodData']  # Convierte los datos del formulario en un diccionario
-        print("ThreeDSMethodData:", threeDSMethodData)
+    threeDSMethodData = request.form.get('threeDSMethodData')
+    if not threeDSMethodData:
+        return '', 400
+    
+    print("Recibido en Webhook:", threeDSMethodData)
+
+    # Payload para el PATCH
+    payload = {
+        "authenticationType": "Secure3DAuthenticationUpdateRequest",
+        "methodNotificationStatus":"RECEIVED"
+    }
+
+    # Cabeceras necesarias
+    headers = {
+        "authenticationType": "Secure3DAuthenticationUpdateRequest",
+        "methodNotificationStatus":"RECEIVED"
+    }
+
+    try:
+        response = requests.patch("https://test.ipg-online.com/ipgapi/services/payments/", 
+                                  json=payload, headers=headers)
+        print("PATCH enviado. Status:", response.status_code)
+    except Exception as e:
+        print("Error enviando PATCH:", str(e))
         
-        # Procesa la respuesta del flujo 3D Secure
-        return jsonify({"status": "success"}), 200
+    return '', 200
 
 @main.route('/api', methods=['GET', 'POST'])
 def api():
@@ -240,7 +256,7 @@ def api():
                 "requestType": "PaymentCardSaleTransaction",
                 "paymentMethod": {
                     "paymentCard": {
-                        "number": 4265880000000007, #dynamic_values.get('tarjeta',''),
+                        "number": 4265880000000007, #dynamic_values.get('tarjeta',''), | Fwith: 4265880000000007 | Fwithout: 4147463011110083 | Cwith: 5204700000002745 | Cwithout: 4147463011110059 |
                         "securityCode": 123, #dynamic_values.get('cvv',''),
                         "expiryDate": {
                             "month": 12, #month,
@@ -250,8 +266,8 @@ def api():
                 },
                 "authenticationRequest": {
                     "authenticationType": "Secure3DAuthenticationRequest",
-                    "termURL": "https://42b6-148-244-170-158.ngrok-free.app/webhook3ds",
-                    "methodNotificationURL": "https://42b6-148-244-170-158.ngrok-free.app/webhook3ds",
+                    "termURL": "https://618f-148-244-170-158.ngrok-free.app/webhook3ds",
+                    "methodNotificationURL": "https://618f-148-244-170-158.ngrok-free.app/webhook3ds",  #https://webhook.site/b44996e9-8b58-4f63-b3be-2146d75172c1
                     "challengeIndicator": "01"
     }
         }
@@ -290,19 +306,42 @@ def api():
             if response.status_code == 200:
                 response_json = response.json()        
                 try:
+                    #Se recogen los datos utiles
                     response_json = response.json()  # Intentar decodificar el JSON
                     print("\n\n\nRESPONSE:\n" + str(response_json), "\n\n")
                     iframe_content = response_json.get('authenticationResponse', {}).get('secure3dMethod', {}).get('methodForm', '')
                     ipgTransaction = response_json.get('ipgTransactionId', {})
                     print("IPGTransaction: \n" + ipgTransaction, "\n\n")
                     print("IFRAME: \n" + iframe_content, "\n\n")
+                    
 
-                    return jsonify({ # Retornar JSON al frontend
-                        "transactionId": response_json.get("orderId", "N/A"),
-                        "status": response_json.get("transactionStatus", "N/A"),
-                        "amount": response_json.get("approvedAmount", {}).get("total", "N/A"),
-                        "dateTime": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                    }), 200
+
+                    if not iframe_content:
+                        print("No se recibio Iframe")
+                        return jsonify({ # Retornar JSON al frontend
+                            "transactionId": response_json.get("orderId", "N/A"),
+                            "status": response_json.get("transactionStatus", "N/A"),
+                            "amount": response_json.get("approvedAmount", {}).get("total", "N/A"),
+                            "dateTime": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                        }), 200
+                    
+                    else:
+                        print("Se recibio Iframe")
+                        return jsonify({ # Retornar JSON al frontend
+                            "transactionId": response_json.get("orderId", "N/A"),
+                            "status": response_json.get("transactionStatus", "N/A"),
+                            "amount": response_json.get("approvedAmount", {}).get("total", "N/A"),
+                            "dateTime": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                            "iframe": iframe_content
+                        }), 200
+
+                    # #Flujo original sin los flujos 3ds
+                    # return jsonify({ # Retornar JSON al frontend
+                    #     "transactionId": response_json.get("orderId", "N/A"),
+                    #     "status": response_json.get("transactionStatus", "N/A"),
+                    #     "amount": response_json.get("approvedAmount", {}).get("total", "N/A"),
+                    #     "dateTime": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                    # }), 200
 
                 except json.JSONDecodeError:
                     return jsonify({"error": "Respuesta no contiene un JSON válido"}), 500
